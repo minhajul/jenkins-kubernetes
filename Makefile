@@ -90,5 +90,9 @@ monitoring-delete clean-monitoring: ## Delete monitoring stack
 	-$(KUBECTL) delete -f $(MON_DIR)/
 
 .PHONY: clean
-clean: ## Teardown all project resources & namespace
+clean: ## Complete teardown: K8s namespace, pods, PVCs & project Docker images
+	@echo "==> [1/2] Deleting Kubernetes namespace '$(NS)' & all resources (pods, pvc, services)..."
 	-$(KUBECTL) delete namespace $(NS)
+	@echo "==> [2/2] Removing built project Docker images..."
+	-docker rmi -f nestjs-k8s-app:latest jenkins-custom:lts 2>/dev/null || true
+	@echo "Cleanup complete!"
