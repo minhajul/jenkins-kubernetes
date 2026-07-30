@@ -13,14 +13,18 @@ spec:
       labels:
         app: jenkins-server
     spec:
+      # Run as root inside the Jenkins container so it can write to the
+      # host's Docker socket. Local-dev only — for production, build images
+      # in a separate builder pod (kaniko, buildah, or DinD) and don't
+      # share the host socket.
       securityContext:
-        fsGroup: 1000
-        runAsUser: 1000
+        runAsUser: 0
+        fsGroup: 0
       serviceAccountName: jenkins-admin
       containers:
         - name: jenkins
           # CUSTOM IMAGE — built from jenkins.Dockerfile in repo root.
-          # Includes Node.js 20 + Docker CLI on top of jenkins/jenkins:lts.
+          # Includes Node.js 20 + Docker CLI + kubectl on top of jenkins/jenkins:lts.
           # Build locally with: make build-jenkins
           image: jenkins-custom:lts
           imagePullPolicy: IfNotPresent
