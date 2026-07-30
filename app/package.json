@@ -9,7 +9,11 @@
     "start:dev": "nest start --watch",
     "test": "echo \"No tests yet\" && exit 0"
   },
-  "keywords": ["nestjs", "kubernetes", "jenkins"],
+  "keywords": [
+    "nestjs",
+    "kubernetes",
+    "jenkins"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -22,6 +26,7 @@
   "devDependencies": {
     "@nestjs/cli": "^11.0.24",
     "@types/node": "^22.10.0",
+    "prettier": "^3.9.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.0"
   }
