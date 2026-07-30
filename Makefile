@@ -18,7 +18,7 @@ ns: ## Create the devops-tools namespace
 	$(KUBECTL) create namespace $(NS) || true
 
 .PHONY: install
-install: ns apply ## First-time install: create namespace + apply all Jenkins manifests
+install: ns build-jenkins apply ## First-time install: build Jenkins image + apply manifests
 
 .PHONY: apply
 apply: ## Apply all Jenkins manifests (volume, serviceAccount, service, deployment)
@@ -36,6 +36,10 @@ apply-app: ## Apply NestJS app manifests (in k8s/app/)
 .PHONY: build-app
 build-app: ## Build the NestJS app Docker image locally
 	cd app && docker build -t nestjs-k8s-app:latest .
+
+.PHONY: build-jenkins
+build-jenkins: ## Build the custom Jenkins image (Node + Docker CLI)
+	docker build -f jenkins.Dockerfile -t jenkins-custom:lts .
 
 .PHONY: deploy-app
 deploy-app: build-app apply-app ## Build image and deploy app to K8s
@@ -178,8 +182,9 @@ cleanall: ## NUCLEAR: wipe everything related to THIS project only
 	@echo "==> [4/7] Deleting project-specific StorageClass..."
 	-$(KUBECTL) delete storageclass local-storage --ignore-not-found
 	@echo
-	@echo "==> [5/7] Removing the jenkins Docker image..."
+	@echo "==> [5/7] Removing the jenkins Docker images..."
 	-docker rmi -f jenkins/jenkins:lts 2>/dev/null || true
+	-docker rmi -f jenkins-custom:lts 2>/dev/null || true
 	@echo
 	@echo "==> [6/7] Killing stuck port-forwards on 8080/32000..."
 	-lsof -ti:8080 2>/dev/null | xargs -r kill -9 2>/dev/null || true

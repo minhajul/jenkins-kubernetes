@@ -19,7 +19,11 @@ spec:
       serviceAccountName: jenkins-admin
       containers:
         - name: jenkins
-          image: jenkins/jenkins:lts
+          # CUSTOM IMAGE — built from jenkins.Dockerfile in repo root.
+          # Includes Node.js 20 + Docker CLI on top of jenkins/jenkins:lts.
+          # Build locally with: make build-jenkins
+          image: jenkins-custom:lts
+          imagePullPolicy: IfNotPresent
           resources:
             limits:
               memory: "2Gi"
@@ -32,6 +36,19 @@ spec:
               containerPort: 8080
             - name: jnlpport
               containerPort: 50000
+          env:
+            # Point docker CLI at the host's Docker socket.
+            # Required for `docker build` to work inside the Jenkins pod
+            # on a single-node cluster (OrbStack, Docker Desktop, kind, etc.).
+            - name: DOCKER_HOST
+              value: unix:///var/run/docker.sock
+          volumeMounts:
+            - name: jenkins-data
+              mountPath: /var/jenkins_home
+            # Mount the host's Docker socket so the Jenkins pod can use the
+            # host's Docker daemon to build images.
+            - name: docker-sock
+              mountPath: /var/run/docker.sock
           livenessProbe:
             httpGet:
               path: "/login"
@@ -48,10 +65,13 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
-          volumeMounts:
-            - name: jenkins-data
-              mountPath: /var/jenkins_home
       volumes:
         - name: jenkins-data
           persistentVolumeClaim:
             claimName: jenkins-pv-claim
+        # Host path — only works if Jenkins pod runs on the same node as the
+        # Docker daemon. For single-node clusters this is guaranteed.
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock
+            type: Socket
