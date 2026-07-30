@@ -11,7 +11,7 @@ export class AppController {
         return {
             status: 'ok',
             message: 'This project is only for API usage.',
-            version: '1.0.1'
+            version: '1.0.2'
         };
     }
 
