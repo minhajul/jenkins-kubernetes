@@ -115,14 +115,57 @@ mkdir -p ~/.kube
     - Script Path: `Jenkinsfile`  ← **note: root of repo, not `app/`**
 5. Save.
 
-### 4.4 Enable webhook (optional)
+### 4.4 Set Up Automatic Deployment on Git Push
 
-If using GitHub:
+To trigger builds and deployments automatically when pushing to GitHub, you need to configure the connection between GitHub and Jenkins.
 
-- Repo → Settings → Webhooks → Add
-- Payload URL: `http://<jenkins-url>/github-webhook/`
-- Content type: `application/json`
-- Events: "Just the push event"
+#### Option A: Webhook-based Trigger (Recommended for Public Jenkins)
+If your Jenkins instance is publicly accessible on the internet:
+
+1. **Configure GitHub Webhook:**
+   - Go to your GitHub Repository → **Settings** → **Webhooks** → **Add webhook**.
+   - **Payload URL:** `http://<YOUR_PUBLIC_JENKINS_URL>/github-webhook/` (Make sure to include the trailing slash `/`).
+   - **Content type:** `application/json`
+   - **Which events?** Choose **Just the push event**.
+   - Click **Add webhook**.
+2. **Configure Jenkins Job:**
+   - In your Jenkins job configuration, scroll down to the **Build Triggers** section.
+   - Check the box for **GitHub hook trigger for GITScm polling**.
+   - Save the configuration.
+3. **Pipeline Configuration:**
+   - The `Jenkinsfile` contains the `githubPush()` trigger in the `triggers` block, which registers the job for webhook triggers:
+     ```groovy
+     triggers {
+         githubPush()
+     }
+     ```
+
+#### Option B: Webhook-based Trigger via ngrok (Recommended for Local Dev)
+If your Jenkins is running locally (e.g. inside Kubernetes via Docker Desktop / OrbStack at `localhost` / `NodePort`), GitHub cannot send webhooks directly to a private IP. Use `ngrok` or `localtunnel` to create a public URL:
+
+1. **Expose Jenkins port 8080 (or your NodePort) via ngrok:**
+   ```bash
+   ngrok http 8080
+   # OR if exposing via NodePort 32000
+   ngrok http 32000
+   ```
+2. **Get the Public URL:**
+   - `ngrok` will provide a public forwarding address (e.g., `https://xxxx-xx-xx-xx.ngrok-free.app`).
+3. **Configure GitHub Webhook:**
+   - Use the ngrok URL as the base URL: `https://xxxx-xx-xx-xx.ngrok-free.app/github-webhook/`.
+4. Ensure **GitHub hook trigger for GITScm polling** is enabled in your Jenkins job.
+
+#### Option C: Polling SCM (Fallback if webhooks/tunnels are not possible)
+If you cannot use webhooks, you can configure Jenkins to check (poll) GitHub for changes periodically:
+
+1. **Update the `Jenkinsfile` `triggers` block:**
+   Replace the `githubPush()` trigger with `pollSCM(...)`:
+   ```groovy
+   triggers {
+       pollSCM('*/5 * * * *') // Check for changes every 5 minutes
+   }
+   ```
+   *Note: SCM polling can cause delay and puts extra load on GitHub APIs, so webhooks are always preferred.*
 
 ---
 
