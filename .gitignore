@@ -1,0 +1,91 @@
+# ============================================
+# Node / NestJS (app/)
+# ============================================
+node_modules/
+dist/
+coverage/
+.nyc_output/
+.npm/
+.eslintcache
+
+# ============================================
+# Env files (never commit secrets!)
+# ============================================
+.env
+.env.*
+!.env.example
+
+# ============================================
+# Logs
+# ============================================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+
+# ============================================
+# Build artifacts
+# ============================================
+build/
+out/
+*.tsbuildinfo
+.tsbuildinfo
+
+# ============================================
+# Docker / Kubernetes runtime junk
+# ============================================
+.docker/
+kubeconfig
+kubeconfig.*
+*.kubeconfig
+
+# ============================================
+# Jenkins runtime data (in case it's ever
+# checked out into the repo)
+# ============================================
+.jenkins/
+jenkins_home/
+jenkins-data/
+jenkins.war
+
+# ============================================
+# IDE / Editor
+# ============================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*.iml
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ============================================
+# OS junk
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ============================================
+# Puku CLI local cache
+# ============================================
+.puku-cli/
+
+# ============================================
+# Temporary / scratch files
+# ============================================
+*.tmp
+*.bak
+*.swp
+*.orig
+*~
