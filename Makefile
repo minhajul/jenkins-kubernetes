@@ -56,6 +56,30 @@ app-status: ## Status of the NestJS app
 app-logs: ## Tail NestJS app logs
 	$(KUBECTL) logs -n $(NS) -l app=nestjs-app -f
 
+MONITORING_DIR := k8s/monitoring
+
+.PHONY: monitoring-apply
+monitoring-apply: ## Apply Prometheus, Loki, Promtail & Grafana manifests
+	$(KUBECTL) apply -f $(MONITORING_DIR)/prometheus.yaml
+	$(KUBECTL) apply -f $(MONITORING_DIR)/loki.yaml
+	$(KUBECTL) apply -f $(MONITORING_DIR)/promtail.yaml
+	$(KUBECTL) apply -f $(MONITORING_DIR)/grafana.yaml
+
+.PHONY: monitoring-status
+monitoring-status: ## Status of Grafana, Prometheus, Loki & Promtail
+	$(KUBECTL) get pods,svc -n $(NS) -l 'app in (prometheus-server,loki,promtail,grafana)'
+
+.PHONY: monitoring-delete
+monitoring-delete: ## Delete monitoring stack manifests
+	-$(KUBECTL) delete -f $(MONITORING_DIR)/grafana.yaml
+	-$(KUBECTL) delete -f $(MONITORING_DIR)/promtail.yaml
+	-$(KUBECTL) delete -f $(MONITORING_DIR)/loki.yaml
+	-$(KUBECTL) delete -f $(MONITORING_DIR)/prometheus.yaml
+
+.PHONY: grafana-pf
+grafana-pf: ## Port-forward Grafana UI to http://localhost:3000
+	$(KUBECTL) port-forward -n $(NS) svc/grafana-service 3000:3000
+
 # ---------- Status ----------
 
 .PHONY: status
