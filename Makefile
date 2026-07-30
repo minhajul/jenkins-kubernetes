@@ -97,7 +97,11 @@ shell: ## Open a shell inside the jenkins container
 	$(KUBECTL) exec -n $(NS) -it deploy/$(APP) -- bash
 
 .PHONY: password
-password: ## Print the initial admin password
+password: ## Print the initial admin password (waits for Jenkins to be ready)
+	@echo "Waiting for Jenkins pod to be ready..."
+	@$(KUBECTL) wait --for=condition=ready pod -l app=jenkins-server -n $(NS) --timeout=180s 2>/dev/null || \
+		(echo "ERROR: Jenkins pod didn't become ready in 180s. Try: make logs"; exit 1)
+	@echo "Jenkins is ready. Fetching password..."
 	@$(KUBECTL) exec -n $(NS) deploy/$(APP) -- cat /var/jenkins_home/secrets/initialAdminPassword
 
 # ---------- Lifecycle ----------
