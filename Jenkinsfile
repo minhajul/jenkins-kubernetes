@@ -83,7 +83,7 @@ pipeline {
       echo 'Build failed. See console output above.'
     }
     always {
-      sh 'docker rmi ${IMAGE_NAME}:${BUILD_TAG} || true'
+      sh 'docker rmi ${IMAGE_NAME}:${BUILD_TAG} 2>/dev/null || true'
     }
   }
 }
