@@ -53,7 +53,7 @@ data:
         {
           "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
           "id": 1,
-          "title": "NestJS Uptime",
+          "title": "Uptime",
           "type": "stat",
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "targets": [{ "expr": "nestjs_process_uptime_seconds", "legendFormat": "Uptime", "refId": "A" }],
