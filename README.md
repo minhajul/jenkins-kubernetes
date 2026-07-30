@@ -72,7 +72,7 @@ make monitoring-apply
 | `make monitoring-apply` | Deploys Grafana, Prometheus, Loki, and Promtail |
 | `make monitoring-status` | Checks status of monitoring pods |
 | `make grafana-pf` | Port-forwards Grafana UI to `http://localhost:3000` |
-| `make cleanall` | Wipes all project-created K8s resources |
+| `make clean` | Wipes all project-created K8s resources |
 
 ---
 
