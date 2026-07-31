@@ -19,7 +19,7 @@ MON_SELECTOR    := app in (prometheus-server,loki,promtail,grafana)
 
 .PHONY: help
 help: ## Show available Makefile targets
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+([[:space:]]+[a-zA-Z_-]+)*:.*?## / {split($$1, a, /[[:space:]]+/); printf "  \033[36m%-20s\033[0m %s\n", a[1], $$2}' $(MAKEFILE_LIST)
 
 # ---------- Info & Validation ----------
 
@@ -123,6 +123,20 @@ pf pf-jenkins: ## Port-forward Jenkins to localhost:8080
 .PHONY: grafana-pf pf-grafana
 grafana-pf pf-grafana: ## Port-forward Grafana to localhost:3000
 	$(KUBECTL) port-forward -n $(NS) svc/grafana-service 3000:3000
+
+.PHONY: prometheus-pf pf-prometheus
+prometheus-pf pf-prometheus: ## Port-forward Prometheus to localhost:9090
+	$(KUBECTL) port-forward -n $(NS) svc/prometheus-service 9090:9090
+
+.PHONY: loki-pf pf-loki
+loki-pf pf-loki: ## Port-forward Loki to localhost:3100
+	$(KUBECTL) port-forward -n $(NS) svc/loki-service 3100:3100
+
+.PHONY: prometheus-reload
+prometheus-reload: ## Recompute prometheus config checksum & apply (rolls out on change)
+	@HASH=$$(python3 -c "import yaml,hashlib; docs=[d for d in yaml.safe_load_all(open('$(MON_DIR)/prometheus.yaml')) if d]; cm=[d for d in docs if d.get('kind')=='ConfigMap' and d['metadata']['name']=='prometheus-config'][0]; print(hashlib.sha256(cm['data']['prometheus.yml'].encode()).hexdigest())"); \
+	python3 -c "import re,sys; p='$(MON_DIR)/prometheus.yaml'; s=open(p).read(); open(p,'w').write(re.sub(r'(checksum/config: )[0-9a-f]+', r'\g<1>$$HASH', s))"; \
+	$(KUBECTL) apply -f $(MON_DIR)/prometheus.yaml
 
 # ---------- Teardown ----------
 

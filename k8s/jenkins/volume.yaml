@@ -4,6 +4,8 @@ metadata:
   name: jenkins-pv-claim
   namespace: devops-tools
 spec:
+  # Uses the cluster default StorageClass (local-path on this cluster).
+  # Pin `storageClassName:` explicitly if the cluster has multiple SCs.
   accessModes:
     - ReadWriteOnce
   resources:

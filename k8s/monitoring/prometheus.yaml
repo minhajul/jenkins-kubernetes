@@ -64,6 +64,9 @@ metadata:
   namespace: devops-tools
   labels:
     app: prometheus-server
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/part-of: devops-tools
+    app.kubernetes.io/managed-by: kubectl
 spec:
   replicas: 1
   selector:
@@ -73,6 +76,13 @@ spec:
     metadata:
       labels:
         app: prometheus-server
+        app.kubernetes.io/name: prometheus
+        app.kubernetes.io/part-of: devops-tools
+        app.kubernetes.io/managed-by: kubectl
+      # Bump this hash when prometheus-config changes to trigger a rollout
+      # (see `make prometheus-reload`). Also requires --web.enable-lifecycle.
+      annotations:
+        checksum/config: f6659775cf54d58e47d342f61079e1867d9d7e6a1cec2da01f2b517563dc806c
     spec:
       serviceAccountName: prometheus-sa
       securityContext:
@@ -83,8 +93,16 @@ spec:
           args:
             - "--config.file=/etc/prometheus/prometheus.yml"
             - "--storage.tsdb.path=/prometheus"
+            - "--web.enable-lifecycle"
           ports:
             - containerPort: 9090
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
           volumeMounts:
             - name: config-volume
               mountPath: /etc/prometheus
@@ -104,6 +122,8 @@ metadata:
   name: prometheus-pv-claim
   namespace: devops-tools
 spec:
+  # Uses the cluster default StorageClass (local-path on this cluster).
+  # Pin `storageClassName:` explicitly if the cluster has multiple SCs.
   accessModes:
     - ReadWriteOnce
   resources:
@@ -115,11 +135,17 @@ kind: Service
 metadata:
   name: prometheus-service
   namespace: devops-tools
+  labels:
+    app: prometheus-server
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/part-of: devops-tools
+    app.kubernetes.io/managed-by: kubectl
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: prometheus-server
   ports:
-    - port: 9090
+    - name: http
+      port: 9090
       targetPort: 9090
-      nodePort: 30090
+      protocol: TCP

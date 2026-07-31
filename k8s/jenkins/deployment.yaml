@@ -3,6 +3,11 @@ kind: Deployment
 metadata:
   name: jenkins
   namespace: devops-tools
+  labels:
+    app: jenkins-server
+    app.kubernetes.io/name: jenkins
+    app.kubernetes.io/part-of: devops-tools
+    app.kubernetes.io/managed-by: kubectl
 spec:
   replicas: 1
   selector:
@@ -12,6 +17,9 @@ spec:
     metadata:
       labels:
         app: jenkins-server
+        app.kubernetes.io/name: jenkins
+        app.kubernetes.io/part-of: devops-tools
+        app.kubernetes.io/managed-by: kubectl
     spec:
       # Run as root inside the Jenkins container so it can write to the
       # host's Docker socket. Local-dev only — for production, build images

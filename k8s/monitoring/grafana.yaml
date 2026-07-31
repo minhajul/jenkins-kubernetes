@@ -385,6 +385,9 @@ metadata:
   namespace: devops-tools
   labels:
     app: grafana
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/part-of: devops-tools
+    app.kubernetes.io/managed-by: kubectl
 spec:
   replicas: 1
   selector:
@@ -394,6 +397,9 @@ spec:
     metadata:
       labels:
         app: grafana
+        app.kubernetes.io/name: grafana
+        app.kubernetes.io/part-of: devops-tools
+        app.kubernetes.io/managed-by: kubectl
     spec:
       containers:
         - name: grafana
@@ -417,6 +423,13 @@ spec:
               value: "Admin"
           ports:
             - containerPort: 3000
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "512Mi"
           volumeMounts:
             - name: datasources-volume
               mountPath: /etc/grafana/provisioning/datasources
@@ -440,11 +453,17 @@ kind: Service
 metadata:
   name: grafana-service
   namespace: devops-tools
+  labels:
+    app: grafana
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/part-of: devops-tools
+    app.kubernetes.io/managed-by: kubectl
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: grafana
   ports:
-    - port: 3000
+    - name: http
+      port: 3000
       targetPort: 3000
-      nodePort: 30030
+      protocol: TCP

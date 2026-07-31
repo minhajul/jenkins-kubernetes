@@ -3,6 +3,11 @@ kind: Service
 metadata:
   name: nestjs-app-service
   namespace: devops-tools
+  labels:
+    app: nestjs-app
+    app.kubernetes.io/name: nestjs-app
+    app.kubernetes.io/part-of: devops-tools
+    app.kubernetes.io/managed-by: kubectl
 spec:
   type: NodePort
   selector:
@@ -12,3 +17,4 @@ spec:
       port: 3000
       targetPort: 3000
       nodePort: 30009
+      protocol: TCP

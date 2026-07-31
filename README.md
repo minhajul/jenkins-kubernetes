@@ -51,7 +51,9 @@ curl http://localhost:30009/metrics
 # Apply Grafana, Prometheus, Loki & Promtail manifests
 make monitoring-apply
 
-# Access Grafana Dashboard at http://localhost:30030 (or port-forward: make grafana-pf)
+# Access the UIs via port-forward (services are ClusterIP-only)
+make grafana-pf      # http://localhost:3000
+make prometheus-pf   # http://localhost:9090
 # Default Login: Anonymous / admin (pre-provisioned dashboard automatically loaded)
 ```
 
@@ -59,11 +61,13 @@ make monitoring-apply
 
 ## 📊 Observability Stack Architecture
 
-- **Prometheus** (`:30090` / `:9090`): Scrapes app metrics from NestJS `/metrics` endpoint.
-- **Loki** (`:30100` / `:3100`): Stores pod logs using local filesystem storage.
+- **Prometheus**: Scrapes app metrics from NestJS `/metrics` endpoint. Access via `make prometheus-pf` → `http://localhost:9090`.
+- **Loki**: Stores pod logs using local filesystem storage (persistent PVC).
 - **Promtail**: Collects pod/container logs from Kubernetes node and forwards to Loki.
-- **Grafana** (`:30030` / `:3000`): Pre-provisioned with Prometheus & Loki datasources and an automated Observability
-  Dashboard.
+- **Grafana**: Pre-provisioned with Prometheus & Loki datasources and an automated Observability Dashboard. Access via
+  `make grafana-pf` → `http://localhost:3000`.
+
+> Monitoring services are `ClusterIP` only (not exposed on NodePorts) — use the `make *-pf` port-forwards to reach them.
 
 ---
 
@@ -85,6 +89,9 @@ make monitoring-apply
 | `make monitoring-status` | Checks status of monitoring pods                                |
 | `make monitoring-logs`   | Tails monitoring pod logs                                       |
 | `make grafana-pf`        | Port-forwards Grafana UI to `http://localhost:3000`             |
+| `make prometheus-pf`     | Port-forwards Prometheus to `http://localhost:9090`             |
+| `make loki-pf`           | Port-forwards Loki to `http://localhost:3100`                   |
+| `make prometheus-reload` | Recompute Prometheus config checksum & re-apply                |
 | `make clean`             | Wipes all project-created K8s resources & Docker images         |
 
 ---

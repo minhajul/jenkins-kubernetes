@@ -71,6 +71,9 @@ metadata:
   namespace: devops-tools
   labels:
     app: promtail
+    app.kubernetes.io/name: promtail
+    app.kubernetes.io/part-of: devops-tools
+    app.kubernetes.io/managed-by: kubectl
 spec:
   selector:
     matchLabels:
@@ -79,6 +82,9 @@ spec:
     metadata:
       labels:
         app: promtail
+        app.kubernetes.io/name: promtail
+        app.kubernetes.io/part-of: devops-tools
+        app.kubernetes.io/managed-by: kubectl
     spec:
       serviceAccountName: promtail-sa
       containers:
@@ -86,6 +92,13 @@ spec:
           image: grafana/promtail:2.9.8
           args:
             - "-config.file=/etc/promtail/promtail.yaml"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
           volumeMounts:
             - name: config-volume
               mountPath: /etc/promtail

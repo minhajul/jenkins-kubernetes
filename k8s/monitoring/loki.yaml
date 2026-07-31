@@ -46,6 +46,9 @@ metadata:
   namespace: devops-tools
   labels:
     app: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/part-of: devops-tools
+    app.kubernetes.io/managed-by: kubectl
 spec:
   replicas: 1
   selector:
@@ -55,6 +58,9 @@ spec:
     metadata:
       labels:
         app: loki
+        app.kubernetes.io/name: loki
+        app.kubernetes.io/part-of: devops-tools
+        app.kubernetes.io/managed-by: kubectl
     spec:
       securityContext:
         fsGroup: 10001
@@ -65,6 +71,13 @@ spec:
             - "-config.file=/etc/loki/loki.yaml"
           ports:
             - containerPort: 3100
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
           volumeMounts:
             - name: config-volume
               mountPath: /etc/loki
@@ -84,6 +97,8 @@ metadata:
   name: loki-pv-claim
   namespace: devops-tools
 spec:
+  # Uses the cluster default StorageClass (local-path on this cluster).
+  # Pin `storageClassName:` explicitly if the cluster has multiple SCs.
   accessModes:
     - ReadWriteOnce
   resources:
@@ -95,11 +110,17 @@ kind: Service
 metadata:
   name: loki-service
   namespace: devops-tools
+  labels:
+    app: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/part-of: devops-tools
+    app.kubernetes.io/managed-by: kubectl
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: loki
   ports:
-    - port: 3100
+    - name: http
+      port: 3100
       targetPort: 3100
-      nodePort: 30100
+      protocol: TCP

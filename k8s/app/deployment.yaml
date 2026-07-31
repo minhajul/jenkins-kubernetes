@@ -5,6 +5,9 @@ metadata:
   namespace: devops-tools
   labels:
     app: nestjs-app
+    app.kubernetes.io/name: nestjs-app
+    app.kubernetes.io/part-of: devops-tools
+    app.kubernetes.io/managed-by: kubectl
 spec:
   replicas: 2
   selector:
@@ -14,6 +17,9 @@ spec:
     metadata:
       labels:
         app: nestjs-app
+        app.kubernetes.io/name: nestjs-app
+        app.kubernetes.io/part-of: devops-tools
+        app.kubernetes.io/managed-by: kubectl
     spec:
       serviceAccountName: nestjs-app-sa
       containers:

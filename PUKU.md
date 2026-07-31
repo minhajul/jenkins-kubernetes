@@ -48,7 +48,9 @@ Run `make help` for the full list. The ones you'll touch most:
   currently least-privilege for the pipeline (`set image` + `rollout status`); extend it if you add pipeline steps.
 - **The Jenkins job must have `<lightweight>false</lightweight>`** in `config.xml`, or the git checkout stage fails with
   `fatal: not in a git directory`. Lightweight checkout can't satisfy `GitSCMFileSystem` reliably.
-- **NodePort 32000 = Jenkins, 30009 = NestJS app**. Don't change them without updating `Makefile` and docs.
+- **NodePort 32000 = Jenkins, 30009 = NestJS app** — these are the only NodePorts. Monitoring services are
+  `ClusterIP` only; reach them via `make grafana-pf` / `make prometheus-pf` / `make loki-pf`. Don't change them without
+  updating `Makefile` and docs.
 - **The app image is built against the host Docker daemon** (mounted via `/var/run/docker.sock`) and stored on the
   host — not in a registry. Survives pod restarts because the daemon is on your Mac, but won't survive `make clean`.
 
