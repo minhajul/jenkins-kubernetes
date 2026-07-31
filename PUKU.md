@@ -32,7 +32,9 @@ Run `make help` for the full list. The ones you'll touch most:
 | `make logs` / `make app-logs` | Tail Jenkins / NestJS logs |
 | `make password` | Print initial admin password (waits for pod Ready) |
 | `make restart-app` | Rolling restart of the NestJS deployment |
-| `make clean` | Wipe everything tied to this project (asks for `yes` confirmation) |
+| `make validate` | Dry-run all manifests (no cluster changes) |
+| `make info` | Show namespace, image names, and manifest dirs |
+| `make clean` | Wipe everything tied to this project: namespace + Docker images |
 
 ## K8s / Jenkins gotchas (learned the hard way — read before editing)
 
@@ -40,7 +42,7 @@ Run `make help` for the full list. The ones you'll touch most:
 - **The `jenkins-admin` ClusterRole must grant `apiGroups: ["*"]`**, not just `[""]`. The core API group alone (`apiGroups: [""]`) doesn't cover `apps/v1` Deployments, so `kubectl set image deployment/...` will be forbidden.
 - **The Jenkins job must have `<lightweight>false</lightweight>`** in `config.xml`, or the git checkout stage fails with `fatal: not in a git directory`. Lightweight checkout can't satisfy `GitSCMFileSystem` reliably.
 - **NodePort 32000 = Jenkins, 30009 = NestJS app**. Don't change them without updating `Makefile` and docs.
-- **The app image is built against the host Docker daemon** (mounted via `/var/run/docker.sock`) and stored on the host — not in a registry. Survives pod restarts because the daemon is on your Mac, but won't survive `make cleanall`.
+- **The app image is built against the host Docker daemon** (mounted via `/var/run/docker.sock`) and stored on the host — not in a registry. Survives pod restarts because the daemon is on your Mac, but won't survive `make clean`.
 
 ## File layout
 

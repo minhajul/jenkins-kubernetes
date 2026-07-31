@@ -113,6 +113,9 @@ triggers {
 | **Verify App Endpoint** | `curl http://localhost:30009/health`                         |
 | **Rollback Deployment** | `kubectl -n devops-tools rollout undo deployment/nestjs-app` |
 | **Tail Jenkins Logs**   | `make logs`                                                  |
+| **Check Monitoring**    | `make monitoring-status` / `make monitoring-logs`            |
+| **Validate Manifests**  | `make validate`                                              |
+| **Show Project Config** | `make info`                                                  |
 
 ---
 

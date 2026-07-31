@@ -63,16 +63,21 @@ make monitoring-apply
 
 | Command | Description |
 | :--- | :--- |
+| `make help` | Lists all available Makefile targets |
+| `make info` | Shows project config (namespace, images, manifest dirs) |
+| `make validate` | Dry-runs all manifests without applying them |
 | `make install` | First-time setup: builds Jenkins image & applies K8s manifests |
 | `make password` | Prints initial Jenkins admin password |
 | `make pf` | Port-forwards Jenkins UI to `http://localhost:8080` |
 | `make deploy-app` | Builds NestJS app image & deploys to Kubernetes |
+| `make status` | Shows all pods, services & PVCs in the `devops-tools` namespace |
 | `make app-status` | Shows running pods and services for NestJS app |
 | `make app-logs` | Tails NestJS app logs |
 | `make monitoring-apply` | Deploys Grafana, Prometheus, Loki, and Promtail |
 | `make monitoring-status` | Checks status of monitoring pods |
+| `make monitoring-logs` | Tails monitoring pod logs |
 | `make grafana-pf` | Port-forwards Grafana UI to `http://localhost:3000` |
-| `make clean` | Wipes all project-created K8s resources |
+| `make clean` | Wipes all project-created K8s resources & Docker images |
 
 ---
 
