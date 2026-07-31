@@ -34,7 +34,7 @@ Run `make help` for the full list. The ones you'll touch most:
 | `make logs` / `make app-logs` | Tail Jenkins / NestJS logs                                                |
 | `make password`               | Print initial admin password (waits for pod Ready)                        |
 | `make restart-app`            | Rolling restart of the NestJS deployment                                  |
-| `make validate`               | Dry-run validate all manifests (requires a running cluster)                    |
+| `make validate`               | Dry-run validate all manifests (requires a running cluster)               |
 | `make info`                   | Show namespace, image names, and manifest dirs                            |
 | `make clean`                  | Wipe everything tied to this project: namespace + Docker images           |
 
@@ -43,9 +43,9 @@ Run `make help` for the full list. The ones you'll touch most:
 - **Jenkins container runs as root** (`securityContext.runAsUser: 0` in `k8s/jenkins/deployment.yaml`). This is so it
   can write to the host's Docker socket. It's hardened as far as the socket requires: `allowPrivilegeEscalation: false`,
   all capabilities dropped, runtime seccomp, read-only socket mount. Local-dev only — see *Moving to production* below.
-- **The `jenkins-admin` ClusterRole covers `apps` (deployments/replicasets) plus read-only core resources** —
-  it must NOT be narrowed to `apiGroups: [""]` only, or `kubectl set image deployment/...` will be forbidden. It is
-  currently least-privilege for the pipeline (`set image` + `rollout status`); extend it if you add pipeline steps.
+- **The `jenkins-admin` ClusterRole covers `apps` (deployments/replicasets) plus read-only core resources** — it must
+  NOT be narrowed to `apiGroups: [""]` only, or `kubectl set image deployment/...` will be forbidden. It is currently
+  least-privilege for the pipeline (`set image` + `rollout status`); extend it if you add pipeline steps.
 - **The Jenkins job must have `<lightweight>false</lightweight>`** in `config.xml`, or the git checkout stage fails with
   `fatal: not in a git directory`. Lightweight checkout can't satisfy `GitSCMFileSystem` reliably.
 - **NodePort 32000 = Jenkins, 30009 = NestJS app** — these are the only NodePorts. Monitoring services are
@@ -62,8 +62,8 @@ state, and images never leave the host. Two migration paths:
 ### Option A — DinD sidecar (simplest)
 
 Add a privileged `docker:dind` sidecar to the Jenkins pod, point `DOCKER_HOST=tcp://localhost:2375`, drop the host
-socket mount, and run the Jenkins container as non-root (`runAsUser: 1000`). Images now live inside the DinD daemon,
-so also push to a local registry (e.g. `registry:2` deployment) and point the app Deployment's `imagePullPolicy` at it —
+socket mount, and run the Jenkins container as non-root (`runAsUser: 1000`). Images now live inside the DinD daemon, so
+also push to a local registry (e.g. `registry:2` deployment) and point the app Deployment's `imagePullPolicy` at it —
 otherwise kubelet can't pull builds produced inside the sidecar.
 
 ### Option B — Kaniko / Buildah (most secure, recommended for prod)

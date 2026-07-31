@@ -114,7 +114,7 @@ triggers {
 | **Rollback Deployment** | `kubectl -n devops-tools rollout undo deployment/nestjs-app` |
 | **Tail Jenkins Logs**   | `make logs`                                                  |
 | **Check Monitoring**    | `make monitoring-status` / `make monitoring-logs`            |
-| **Validate Manifests**  | `make validate` (needs a running cluster)                       |
+| **Validate Manifests**  | `make validate` (needs a running cluster)                    |
 | **Show Project Config** | `make info`                                                  |
 
 ---

@@ -9,14 +9,14 @@ kind: ClusterRole
 metadata:
   name: prometheus-role
 rules:
-  - apiGroups: [""]
-    resources: ["nodes", "nodes/proxy", "services", "endpoints", "pods"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["extensions", "networking.k8s.io"]
-    resources: ["ingresses"]
-    verbs: ["get", "list", "watch"]
-  - nonResourceURLs: ["/metrics"]
-    verbs: ["get"]
+  - apiGroups: [ "" ]
+    resources: [ "nodes", "nodes/proxy", "services", "endpoints", "pods" ]
+    verbs: [ "get", "list", "watch" ]
+  - apiGroups: [ "extensions", "networking.k8s.io" ]
+    resources: [ "ingresses" ]
+    verbs: [ "get", "list", "watch" ]
+  - nonResourceURLs: [ "/metrics" ]
+    verbs: [ "get" ]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -45,17 +45,17 @@ data:
     scrape_configs:
       - job_name: 'prometheus'
         static_configs:
-          - targets: ['localhost:9090']
+          - targets: [ 'localhost:9090' ]
 
       - job_name: 'nestjs-app'
         metrics_path: '/metrics'
         static_configs:
-          - targets: ['nestjs-app-service:3000']
+          - targets: [ 'nestjs-app-service:3000' ]
 
       - job_name: 'jenkins'
         metrics_path: '/prometheus/'
         static_configs:
-          - targets: ['jenkins-service:8080']
+          - targets: [ 'jenkins-service:8080' ]
 ---
 apiVersion: apps/v1
 kind: Deployment

@@ -62,7 +62,8 @@ make prometheus-pf   # http://localhost:9090
 
 ## 📊 Observability Stack Architecture
 
-- **Prometheus**: Scrapes app metrics from NestJS `/metrics` endpoint. Access via `make prometheus-pf` → `http://localhost:9090`.
+- **Prometheus**: Scrapes app metrics from NestJS `/metrics` endpoint. Access via `make prometheus-pf` →
+  `http://localhost:9090`.
 - **Loki**: Stores pod logs using local filesystem storage (persistent PVC).
 - **Promtail**: Collects pod/container logs from Kubernetes node and forwards to Loki.
 - **Grafana**: Pre-provisioned with Prometheus & Loki datasources and an automated Observability Dashboard. Access via
@@ -92,7 +93,7 @@ make prometheus-pf   # http://localhost:9090
 | `make grafana-pf`        | Port-forwards Grafana UI to `http://localhost:3000`             |
 | `make prometheus-pf`     | Port-forwards Prometheus to `http://localhost:9090`             |
 | `make loki-pf`           | Port-forwards Loki to `http://localhost:3100`                   |
-| `make prometheus-reload` | Recompute Prometheus config checksum & re-apply                |
+| `make prometheus-reload` | Recompute Prometheus config checksum & re-apply                 |
 | `make clean`             | Wipes all project-created K8s resources & Docker images         |
 
 ---
