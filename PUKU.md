@@ -32,7 +32,7 @@ Run `make help` for the full list. The ones you'll touch most:
 | `make logs` / `make app-logs` | Tail Jenkins / NestJS logs |
 | `make password` | Print initial admin password (waits for pod Ready) |
 | `make restart-app` | Rolling restart of the NestJS deployment |
-| `make cleanall` | Wipe everything tied to this project (asks for `yes` confirmation) |
+| `make clean` | Wipe everything tied to this project (asks for `yes` confirmation) |
 
 ## K8s / Jenkins gotchas (learned the hard way — read before editing)
 
