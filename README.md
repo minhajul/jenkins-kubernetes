@@ -1,18 +1,22 @@
 # NestJS + Kubernetes CI/CD with Jenkins & Observability
 
-A local DevOps handbook for running NestJS microservices on Kubernetes with an automated Jenkins CI/CD pipeline and full Grafana + Prometheus + Loki observability.
+A local DevOps handbook for running NestJS microservices on Kubernetes with an automated Jenkins CI/CD pipeline and full
+Grafana + Prometheus + Loki observability.
 
 ---
 
 ## ⚡ Quick Start (Local Setup)
 
 ### 1. Prerequisites
+
 Ensure you have the following installed:
+
 - [Docker Desktop](https://www.docker.com/) / [OrbStack](https://orbstack.dev/) / [Minikube](https://minikube.sigs.k8s.io/)
 - `kubectl` CLI
 - `make`
 
 ### 2. Start Jenkins in Kubernetes
+
 Run the setup command to create the `devops-tools` namespace, build the custom Jenkins image, and deploy Jenkins:
 
 ```bash
@@ -20,6 +24,7 @@ make install
 ```
 
 ### 3. Get Jenkins Password & Access UI
+
 ```bash
 # Get the admin password
 make password
@@ -30,6 +35,7 @@ make pf
 ```
 
 ### 4. Build & Deploy NestJS App
+
 ```bash
 # Build the Docker image & deploy to Kubernetes
 make deploy-app
@@ -40,6 +46,7 @@ curl http://localhost:30009/metrics
 ```
 
 ### 5. Deploy Monitoring Stack (Grafana + Prometheus + Loki)
+
 ```bash
 # Apply Grafana, Prometheus, Loki & Promtail manifests
 make monitoring-apply
@@ -55,29 +62,30 @@ make monitoring-apply
 - **Prometheus** (`:30090` / `:9090`): Scrapes app metrics from NestJS `/metrics` endpoint.
 - **Loki** (`:30100` / `:3100`): Stores pod logs using local filesystem storage.
 - **Promtail**: Collects pod/container logs from Kubernetes node and forwards to Loki.
-- **Grafana** (`:30030` / `:3000`): Pre-provisioned with Prometheus & Loki datasources and an automated Observability Dashboard.
+- **Grafana** (`:30030` / `:3000`): Pre-provisioned with Prometheus & Loki datasources and an automated Observability
+  Dashboard.
 
 ---
 
 ## 🛠️ Essential Makefile Commands
 
-| Command | Description |
-| :--- | :--- |
-| `make help` | Lists all available Makefile targets |
-| `make info` | Shows project config (namespace, images, manifest dirs) |
-| `make validate` | Dry-runs all manifests without applying them |
-| `make install` | First-time setup: builds Jenkins image & applies K8s manifests |
-| `make password` | Prints initial Jenkins admin password |
-| `make pf` | Port-forwards Jenkins UI to `http://localhost:8080` |
-| `make deploy-app` | Builds NestJS app image & deploys to Kubernetes |
-| `make status` | Shows all pods, services & PVCs in the `devops-tools` namespace |
-| `make app-status` | Shows running pods and services for NestJS app |
-| `make app-logs` | Tails NestJS app logs |
-| `make monitoring-apply` | Deploys Grafana, Prometheus, Loki, and Promtail |
-| `make monitoring-status` | Checks status of monitoring pods |
-| `make monitoring-logs` | Tails monitoring pod logs |
-| `make grafana-pf` | Port-forwards Grafana UI to `http://localhost:3000` |
-| `make clean` | Wipes all project-created K8s resources & Docker images |
+| Command                  | Description                                                     |
+|:-------------------------|:----------------------------------------------------------------|
+| `make help`              | Lists all available Makefile targets                            |
+| `make info`              | Shows project config (namespace, images, manifest dirs)         |
+| `make validate`          | Dry-runs all manifests without applying them                    |
+| `make install`           | First-time setup: builds Jenkins image & applies K8s manifests  |
+| `make password`          | Prints initial Jenkins admin password                           |
+| `make pf`                | Port-forwards Jenkins UI to `http://localhost:8080`             |
+| `make deploy-app`        | Builds NestJS app image & deploys to Kubernetes                 |
+| `make status`            | Shows all pods, services & PVCs in the `devops-tools` namespace |
+| `make app-status`        | Shows running pods and services for NestJS app                  |
+| `make app-logs`          | Tails NestJS app logs                                           |
+| `make monitoring-apply`  | Deploys Grafana, Prometheus, Loki, and Promtail                 |
+| `make monitoring-status` | Checks status of monitoring pods                                |
+| `make monitoring-logs`   | Tails monitoring pod logs                                       |
+| `make grafana-pf`        | Port-forwards Grafana UI to `http://localhost:3000`             |
+| `make clean`             | Wipes all project-created K8s resources & Docker images         |
 
 ---
 
