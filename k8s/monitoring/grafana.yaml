@@ -1,4 +1,14 @@
 apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-admin-credentials
+  namespace: devops-tools
+type: Opaque
+stringData:
+  admin-user: admin
+  admin-password: admin
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-datasources
@@ -45,80 +55,326 @@ metadata:
 data:
   nestjs-overview.json: |
     {
-      "annotations": { "list": [] },
+      "annotations": {
+        "list": []
+      },
       "editable": true,
+      "fiscalYearStartMonth": 0,
       "graphTooltip": 1,
       "id": null,
+      "links": [],
+      "liveNow": false,
       "panels": [
         {
-          "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+          "collapsed": false,
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 0,
+            "y": 0
+          },
           "id": 1,
           "title": "Uptime",
           "type": "stat",
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "targets": [{ "expr": "nestjs_process_uptime_seconds", "legendFormat": "Uptime", "refId": "A" }],
-          "fieldConfig": { "defaults": { "unit": "s", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } }
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "nestjs_process_uptime_seconds",
+              "legendFormat": "Uptime (s)",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "numericMultiValues": false
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "s"
+            }
+          }
         },
         {
-          "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+          "collapsed": false,
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 6,
+            "y": 0
+          },
           "id": 2,
           "title": "Total HTTP Requests",
           "type": "stat",
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "targets": [{ "expr": "sum(nestjs_http_requests_total)", "legendFormat": "Total Requests", "refId": "A" }],
-          "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] } } }
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum(nestjs_http_requests_total)",
+              "legendFormat": "Total Requests",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            }
+          }
         },
         {
-          "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+          "collapsed": false,
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 12,
+            "y": 0
+          },
           "id": 3,
           "title": "Node.js Heap Memory",
           "type": "stat",
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "targets": [{ "expr": "nestjs_nodejs_heap_size_used_bytes", "legendFormat": "Heap Used", "refId": "A" }],
-          "fieldConfig": { "defaults": { "unit": "bytes", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "orange", "value": null }] } } }
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "nestjs_nodejs_heap_size_used_bytes",
+              "legendFormat": "Heap Used",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "orange",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes"
+            }
+          }
         },
         {
-          "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+          "collapsed": false,
+          "gridPos": {
+            "h": 4,
+            "w": 6,
+            "x": 18,
+            "y": 0
+          },
           "id": 4,
           "title": "Event Loop Lag",
           "type": "stat",
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "targets": [{ "expr": "nestjs_nodejs_eventloop_lag_seconds", "legendFormat": "Event Loop Lag", "refId": "A" }],
-          "fieldConfig": { "defaults": { "unit": "s", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "purple", "value": null }] } } }
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "nestjs_nodejs_eventloop_lag_seconds",
+              "legendFormat": "Event Loop Lag",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "purple",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "s"
+            }
+          }
         },
         {
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+          "collapsed": false,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 4
+          },
           "id": 5,
           "title": "HTTP Request Rate (req/sec)",
           "type": "timeseries",
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "targets": [{ "expr": "sum(rate(nestjs_http_requests_total[1m])) by (status_code)", "legendFormat": "Status {{status_code}}", "refId": "A" }],
-          "fieldConfig": { "defaults": { "unit": "reqps", "custom": { "drawStyle": "line", "lineInterpolation": "smooth" } } }
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(nestjs_http_requests_total[1m])) by (status_code)",
+              "legendFormat": "Status {{status_code}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth"
+              },
+              "unit": "reqps"
+            }
+          }
         },
         {
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+          "collapsed": false,
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 4
+          },
           "id": 6,
           "title": "p95 HTTP Request Duration",
           "type": "timeseries",
-          "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "targets": [{ "expr": "histogram_quantile(0.95, sum(rate(nestjs_http_request_duration_seconds_bucket[1m])) by (le))", "legendFormat": "p95 latency", "refId": "A" }],
-          "fieldConfig": { "defaults": { "unit": "s", "custom": { "drawStyle": "line", "lineInterpolation": "smooth" } } }
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.95, sum(rate(nestjs_http_request_duration_seconds_bucket[1m])) by (le))",
+              "legendFormat": "p95 latency",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "smooth"
+              },
+              "unit": "s"
+            }
+          }
         },
         {
-          "gridPos": { "h": 10, "w": 24, "x": 0, "y": 12 },
+          "collapsed": false,
+          "gridPos": {
+            "h": 10,
+            "w": 24,
+            "x": 0,
+            "y": 12
+          },
           "id": 7,
           "title": "Live Pod Logs (Loki)",
           "type": "logs",
-          "datasource": { "type": "loki", "uid": "loki" },
-          "targets": [{ "expr": "{namespace=\"devops-tools\"}", "queryType": "range", "refId": "A" }],
-          "options": { "showLabels": true, "wrapLogMessage": true, "enableLogDetails": true }
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "loki",
+                "uid": "loki"
+              },
+              "editorMode": "code",
+              "expr": "{namespace=\"devops-tools\"}",
+              "queryType": "range",
+              "refId": "A"
+            }
+          ],
+          "options": {
+            "showLabels": true,
+            "wrapLogMessage": true,
+            "enableLogDetails": true
+          }
         }
       ],
       "refresh": "5s",
       "schemaVersion": 38,
       "style": "dark",
-      "tags": ["nestjs", "kubernetes", "loki", "prometheus"],
-      "time": { "from": "now-15m", "to": "now" },
+      "tags": [
+        "nestjs",
+        "kubernetes",
+        "loki",
+        "prometheus"
+      ],
+      "time": {
+        "from": "now-15m",
+        "to": "now"
+      },
       "title": "NestJS & K8s Observability Overview"
     }
 ---
@@ -144,9 +400,15 @@ spec:
           image: grafana/grafana:10.4.0
           env:
             - name: GF_SECURITY_ADMIN_USER
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-admin-credentials
+                  key: admin-user
             - name: GF_SECURITY_ADMIN_PASSWORD
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-admin-credentials
+                  key: admin-password
             - name: GF_USERS_ALLOW_SIGN_UP
               value: "false"
             - name: GF_AUTH_ANONYMOUS_ENABLED

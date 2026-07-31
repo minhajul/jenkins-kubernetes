@@ -75,6 +75,8 @@ spec:
         app: prometheus-server
     spec:
       serviceAccountName: prometheus-sa
+      securityContext:
+        fsGroup: 65534
       containers:
         - name: prometheus
           image: prom/prometheus:v2.51.0
@@ -93,7 +95,20 @@ spec:
           configMap:
             name: prometheus-config
         - name: storage-volume
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: prometheus-pv-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-pv-claim
+  namespace: devops-tools
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
 ---
 apiVersion: v1
 kind: Service

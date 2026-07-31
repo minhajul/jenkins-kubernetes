@@ -15,6 +15,7 @@ spec:
       labels:
         app: nestjs-app
     spec:
+      serviceAccountName: nestjs-app-sa
       containers:
         - name: nestjs-app
           image: nestjs-k8s-app:latest  # overridden by CI/CD to :build-<number>
@@ -33,15 +34,27 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
           readinessProbe:
             httpGet:
               path: /health
               port: 3000
-            initialDelaySeconds: 10
+            initialDelaySeconds: 5
             periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /health
               port: 3000
-            initialDelaySeconds: 30
+            initialDelaySeconds: 10
             periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
