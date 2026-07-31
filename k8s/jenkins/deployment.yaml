@@ -16,7 +16,7 @@ spec:
       # Run as root inside the Jenkins container so it can write to the
       # host's Docker socket. Local-dev only — for production, build images
       # in a separate builder pod (kaniko, buildah, or DinD) and don't
-      # share the host socket.
+      # share the host socket. See PUKU.md → "Moving to production".
       securityContext:
         runAsUser: 0
         fsGroup: 0
@@ -28,6 +28,15 @@ spec:
           # Build locally with: make build-jenkins
           image: jenkins-custom:lts
           imagePullPolicy: IfNotPresent
+          securityContext:
+            # Root is required for host-socket access, but no privileges
+            # beyond that: block privilege escalation, drop all capabilities,
+            # and use the runtime's default seccomp profile.
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
           resources:
             limits:
               memory: "2Gi"
@@ -75,7 +84,10 @@ spec:
             claimName: jenkins-pv-claim
         # Host path — only works if Jenkins pod runs on the same node as the
         # Docker daemon. For single-node clusters this is guaranteed.
+        # Mounted read-only: the Docker CLI communicates with the daemon over
+        # the socket regardless, so no writes through the mount are needed.
         - name: docker-sock
           hostPath:
             path: /var/run/docker.sock
             type: Socket
+          readOnly: true

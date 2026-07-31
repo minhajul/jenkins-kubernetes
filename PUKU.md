@@ -41,14 +41,35 @@ Run `make help` for the full list. The ones you'll touch most:
 ## K8s / Jenkins gotchas (learned the hard way — read before editing)
 
 - **Jenkins container runs as root** (`securityContext.runAsUser: 0` in `k8s/jenkins/deployment.yaml`). This is so it
-  can write to the host's Docker socket. Local-dev only — do not copy this to a prod cluster.
-- **The `jenkins-admin` ClusterRole must grant `apiGroups: ["*"]`**, not just `[""]`. The core API group alone
-  (`apiGroups: [""]`) doesn't cover `apps/v1` Deployments, so `kubectl set image deployment/...` will be forbidden.
+  can write to the host's Docker socket. It's hardened as far as the socket requires: `allowPrivilegeEscalation: false`,
+  all capabilities dropped, runtime seccomp, read-only socket mount. Local-dev only — see *Moving to production* below.
+- **The `jenkins-admin` ClusterRole covers `apps` (deployments/replicasets) plus read-only core resources** —
+  it must NOT be narrowed to `apiGroups: [""]` only, or `kubectl set image deployment/...` will be forbidden. It is
+  currently least-privilege for the pipeline (`set image` + `rollout status`); extend it if you add pipeline steps.
 - **The Jenkins job must have `<lightweight>false</lightweight>`** in `config.xml`, or the git checkout stage fails with
   `fatal: not in a git directory`. Lightweight checkout can't satisfy `GitSCMFileSystem` reliably.
 - **NodePort 32000 = Jenkins, 30009 = NestJS app**. Don't change them without updating `Makefile` and docs.
 - **The app image is built against the host Docker daemon** (mounted via `/var/run/docker.sock`) and stored on the
   host — not in a registry. Survives pod restarts because the daemon is on your Mac, but won't survive `make clean`.
+
+## Moving to production
+
+The host-socket build (root + `/var/run/docker.sock`) only works on a single node where the kubelet and daemon share
+state, and images never leave the host. Two migration paths:
+
+### Option A — DinD sidecar (simplest)
+
+Add a privileged `docker:dind` sidecar to the Jenkins pod, point `DOCKER_HOST=tcp://localhost:2375`, drop the host
+socket mount, and run the Jenkins container as non-root (`runAsUser: 1000`). Images now live inside the DinD daemon,
+so also push to a local registry (e.g. `registry:2` deployment) and point the app Deployment's `imagePullPolicy` at it —
+otherwise kubelet can't pull builds produced inside the sidecar.
+
+### Option B — Kaniko / Buildah (most secure, recommended for prod)
+
+Remove Docker entirely from the build step. The pipeline executes a kaniko pod that builds the image from the `app/`
+context and pushes it to a registry; Jenkins then runs `kubectl set image`. No privileged containers, no host socket.
+Requires: a registry, a `kaniko` step in the `Jenkinsfile` (or a `BuildConfig` if you move to OpenShift), and updated
+image refs/pull policy in `k8s/app/deployment.yaml`.
 
 ## File layout
 
