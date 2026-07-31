@@ -54,7 +54,8 @@ make monitoring-apply
 # Access the UIs via port-forward (services are ClusterIP-only)
 make grafana-pf      # http://localhost:3000
 make prometheus-pf   # http://localhost:9090
-# Default Login: Anonymous / admin (pre-provisioned dashboard automatically loaded)
+# Grafana: anonymous read-only access; admin login uses the creds in the
+# grafana-admin-credentials Secret (default admin/admin).
 ```
 
 ---
@@ -77,7 +78,7 @@ make prometheus-pf   # http://localhost:9090
 |:-------------------------|:----------------------------------------------------------------|
 | `make help`              | Lists all available Makefile targets                            |
 | `make info`              | Shows project config (namespace, images, manifest dirs)         |
-| `make validate`          | Dry-runs all manifests without applying them                    |
+| `make validate`          | Dry-run validate all manifests (requires a running cluster)     |
 | `make install`           | First-time setup: builds Jenkins image & applies K8s manifests  |
 | `make password`          | Prints initial Jenkins admin password                           |
 | `make pf`                | Port-forwards Jenkins UI to `http://localhost:8080`             |

@@ -34,7 +34,7 @@ Run `make help` for the full list. The ones you'll touch most:
 | `make logs` / `make app-logs` | Tail Jenkins / NestJS logs                                                |
 | `make password`               | Print initial admin password (waits for pod Ready)                        |
 | `make restart-app`            | Rolling restart of the NestJS deployment                                  |
-| `make validate`               | Dry-run all manifests (no cluster changes)                                |
+| `make validate`               | Dry-run validate all manifests (requires a running cluster)                    |
 | `make info`                   | Show namespace, image names, and manifest dirs                            |
 | `make clean`                  | Wipe everything tied to this project: namespace + Docker images           |
 

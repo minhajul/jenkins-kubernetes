@@ -1,7 +1,6 @@
 # Makefile for Jenkins, NestJS App, and Observability on Kubernetes
 SHELL      := /bin/bash
 .DEFAULT_GOAL := help
-.DELETE_ON_ERROR:
 
 NS          := devops-tools
 JENKINS_DIR := k8s/jenkins
@@ -33,11 +32,12 @@ info: ## Show project config (namespace, images, dirs)
 	@printf "Monitoring       : %s\n" "$(MON_DIR)"
 
 .PHONY: validate dry-run
-validate dry-run: ## Dry-run validate all manifests without applying
+validate dry-run: ## Dry-run validate all manifests (requires a running cluster)
 	@for d in $(JENKINS_DIR) $(APP_DIR) $(MON_DIR); do \
 		echo "==> Validating $$d"; \
-		$(KUBECTL) apply --dry-run=client -f $$d/ || exit 1; \
+		$(KUBECTL) apply --dry-run=client -f $$d/ >/dev/null || exit 1; \
 	done
+	@echo "OK: all manifests valid"
 
 # ---------- Setup & Deployments ----------
 
@@ -134,8 +134,9 @@ loki-pf pf-loki: ## Port-forward Loki to localhost:3100
 
 .PHONY: prometheus-reload
 prometheus-reload: ## Recompute prometheus config checksum & apply (rolls out on change)
-	@HASH=$$(python3 -c "import yaml,hashlib; docs=[d for d in yaml.safe_load_all(open('$(MON_DIR)/prometheus.yaml')) if d]; cm=[d for d in docs if d.get('kind')=='ConfigMap' and d['metadata']['name']=='prometheus-config'][0]; print(hashlib.sha256(cm['data']['prometheus.yml'].encode()).hexdigest())"); \
-	python3 -c "import re,sys; p='$(MON_DIR)/prometheus.yaml'; s=open(p).read(); open(p,'w').write(re.sub(r'(checksum/config: )[0-9a-f]+', r'\g<1>$$HASH', s))"; \
+	@HASH=$$(awk '/^  prometheus\.yml: \|/ {f=1; next} f && /^---/ {f=0} f {sub(/^    /, ""); print}' $(MON_DIR)/prometheus.yaml | shasum -a 256 | cut -d' ' -f1); \
+	sed -i.bak "s|checksum/config: [0-9a-f]*|checksum/config: $$HASH|" $(MON_DIR)/prometheus.yaml; \
+	rm -f $(MON_DIR)/prometheus.yaml.bak; \
 	$(KUBECTL) apply -f $(MON_DIR)/prometheus.yaml
 
 # ---------- Teardown ----------
