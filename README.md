@@ -54,7 +54,7 @@ make monitoring-apply
 # Access the UIs via port-forward (services are ClusterIP-only)
 make grafana-pf      # http://localhost:3000
 make prometheus-pf   # http://localhost:9090
-# Grafana: anonymous read-only access; admin login uses the creds in the
+# Grafana: anonymous read-only access; admin login uses the credentials in the
 # grafana-admin-credentials Secret (default admin/admin).
 ```
 
