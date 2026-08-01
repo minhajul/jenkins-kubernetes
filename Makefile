@@ -31,6 +31,10 @@ info: ## Show project config (namespace, images, dirs)
 	@printf "App manifests    : %s\n" "$(APP_DIR)"
 	@printf "Monitoring       : %s\n" "$(MON_DIR)"
 
+.PHONY: ns-print
+ns-print: ## Print just the namespace (for scripts/hooks)
+	@printf "%s\n" "$(NS)"
+
 .PHONY: validate dry-run
 validate dry-run: ## Dry-run validate all manifests (requires a running cluster)
 	@for d in $(JENKINS_DIR) $(APP_DIR) $(MON_DIR); do \
