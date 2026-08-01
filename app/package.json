@@ -7,6 +7,7 @@
     "build": "nest build",
     "start": "node dist/main.js",
     "start:dev": "nest start --watch",
+    "lint": "eslint src",
     "test": "echo \"No tests yet\" && exit 0"
   },
   "keywords": [
@@ -25,10 +26,13 @@
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@nestjs/cli": "^11.0.24",
     "@types/node": "^22.10.0",
+    "eslint": "^10.8.0",
     "prettier": "^3.9.6",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+    "typescript-eslint": "^8.65.0"
   }
 }

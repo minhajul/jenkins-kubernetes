@@ -8,6 +8,13 @@ Push to `main` → Jenkins detects the push (via `githubPush()` trigger in `Jenk
 `kubectl set image` rolls out the new deployment. There is no PR review step in this setup; commits on `main` go
 straight to the cluster.
 
+**Before any deploy** (`make deploy-app`, `kubectl apply`, edits to `k8s/app/`), run the `/verify` skill — it
+replays the Jenkins pipeline locally. **Ask before deploying**: do not auto-run `make deploy-app` or `kubectl apply`
+even after a green verify; surface the change and wait for explicit confirmation.
+
+**Commits follow Conventional Commits** — `feat: …`, `fix: …`, `chore: …`, `docs: …`, etc. This is a team convention
+checked into the project; match the existing style on `main`.
+
 ## Build / test commands
 
 The `app/` package has standard npm scripts. Always work inside `app/`:
@@ -16,11 +23,12 @@ The `app/` package has standard npm scripts. Always work inside `app/`:
 cd app
 npm ci            # clean install (use this, not `npm install`)
 npm run build     # nest build → dist/
+npm run lint      # eslint src (flat config in app/eslint.config.mjs)
 npm test          # placeholder; no real tests yet
 npm start         # node dist/main.js (after build)
 ```
 
-There is no `lint` script — formatting is handled by a Prettier hook (see `.puku-cli/settings.json`).
+Formatting is handled by a Prettier hook; lint errors are surfaced by an ESLint hook (see `.puku-cli/settings.json`).
 
 ## Day-to-day Makefile targets
 
@@ -82,3 +90,18 @@ image refs/pull policy in `k8s/app/deployment.yaml`.
 - `jenkins.Dockerfile` — extends `jenkins/jenkins:lts` with Node 20, Docker CLI, kubectl.
 - `Makefile` — all `kubectl` shortcuts.
 - `docs/cicd-setup.md` — manual Jenkins setup walkthrough.
+
+## Skills & hooks
+
+- **Skills** (invoke with `/name`): `verify` (end-to-end local pre-deploy check), `k8s-debug` (failing pod triage),
+  `rotate-jenkins` (initial admin password + port-forward + job URL), `bump-app` (roll a new image tag into the
+  deployment). All live under `.puku-cli/skills/`.
+- **Hooks** (auto-run, can't be skipped): Prettier on every edit to `app/src/*.[jt]s`; ESLint on every edit to
+  `app/src/*.[jt]s`; `kubectl apply --dry-run=client` (or `python3 -c 'yaml.safe_load_all'` if the cluster is down)
+  on every edit to `k8s/**/deployment.yaml`. Defined in `.puku-cli/settings.json`.
+
+## Local config
+
+- `.puku-cli/` is gitignored. Keep personal preferences (e.g. `settings.local.json`) there.
+- `make clean` wipes the `devops-tools` namespace **and** the on-host `nestjs-k8s-app` / `jenkins-custom` images.
+  Anything that hasn't been pushed to a registry is gone after that.
