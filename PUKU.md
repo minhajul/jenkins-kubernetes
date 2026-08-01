@@ -8,8 +8,8 @@ Push to `main` → Jenkins detects the push (via `githubPush()` trigger in `Jenk
 `kubectl set image` rolls out the new deployment. There is no PR review step in this setup; commits on `main` go
 straight to the cluster.
 
-**Before any deploy** (`make deploy-app`, `kubectl apply`, edits to `k8s/app/`), run the `/verify` skill — it
-replays the Jenkins pipeline locally. **Ask before deploying**: do not auto-run `make deploy-app` or `kubectl apply`
+**Before any deploy** (`make deploy-app`, `kubectl apply`, edits to `k8s/app/`), run the `/verify` skill — it replays
+the Jenkins pipeline locally. **Ask before deploying**: do not auto-run `make deploy-app` or `kubectl apply`
 even after a green verify; surface the change and wait for explicit confirmation.
 
 **Commits follow Conventional Commits** — `feat: …`, `fix: …`, `chore: …`, `docs: …`, etc. This is a team convention
