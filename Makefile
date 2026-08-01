@@ -39,7 +39,7 @@ ns-print: ## Print just the namespace (for scripts/hooks)
 validate dry-run: ## Dry-run validate all manifests (requires a running cluster)
 	@for d in $(JENKINS_DIR) $(APP_DIR) $(MON_DIR); do \
 		echo "==> Validating $$d"; \
-		$(KUBECTL) apply --dry-run=client -f $$d/ >/dev/null || exit 1; \
+		$(KUBECTL) apply --dry-run=server -f $$d/ >/dev/null || exit 1; \
 	done
 	@echo "OK: all manifests valid"
 

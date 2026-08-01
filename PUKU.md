@@ -97,8 +97,9 @@ image refs/pull policy in `k8s/app/deployment.yaml`.
   `rotate-jenkins` (initial admin password + port-forward + job URL), `bump-app` (roll a new image tag into the
   deployment). All live under `.puku-cli/skills/`.
 - **Hooks** (auto-run, can't be skipped): Prettier on every edit to `app/src/*.[jt]s`; ESLint on every edit to
-  `app/src/*.[jt]s`; `kubectl apply --dry-run=client` (or `python3 -c 'yaml.safe_load_all'` if the cluster is down)
-  on every edit to `k8s/**/deployment.yaml`. Defined in `.puku-cli/settings.json`.
+  `app/src/*.[jt]s`; `kubectl apply --dry-run=server` on the manifest's directory (falls back to
+  `python3 -c 'yaml.safe_load_all'` if the cluster is down) on every edit to `k8s/**/deployment.yaml`. Defined in
+  `.puku-cli/settings.json`.
 
 ## Local config
 

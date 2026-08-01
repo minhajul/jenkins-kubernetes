@@ -67,9 +67,12 @@ spec:
             - name: jenkins-data
               mountPath: /var/jenkins_home
             # Mount the host's Docker socket so the Jenkins pod can use the
-            # host's Docker daemon to build images.
+            # host's Docker daemon to build images. Read-only at the mount
+            # layer: the Docker CLI talks to the daemon over the socket,
+            # it doesn't write through it.
             - name: docker-sock
               mountPath: /var/run/docker.sock
+              readOnly: true
           livenessProbe:
             httpGet:
               path: "/login"
@@ -92,10 +95,7 @@ spec:
             claimName: jenkins-pv-claim
         # Host path — only works if Jenkins pod runs on the same node as the
         # Docker daemon. For single-node clusters this is guaranteed.
-        # Mounted read-only: the Docker CLI communicates with the daemon over
-        # the socket regardless, so no writes through the mount are needed.
         - name: docker-sock
           hostPath:
             path: /var/run/docker.sock
             type: Socket
-          readOnly: true
